@@ -10,8 +10,8 @@ This repository is planned as a growing collection of small, understandable DOS 
 
 ## Current projects
 
-| Project  | Folder               | Description                                                                                                                          |
-| -------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Project | Folder | Description |
+|---|---|---|
 | Galaxy16 | `projects/Galaxy16/` | Live 8088/8087 galaxy-ring math monitor. Green text, direct video RAM, no disk writes while running. Builds as a DOS `.EXE` program. |
 
 ## Folder layout
@@ -28,7 +28,12 @@ This repository is planned as a growing collection of small, understandable DOS 
 │   ├── TASM_TLINK_SETUP.md
 │   └── Galaxy16_NOTES.md
 ├── tools/
-│   └── README.md
+│   ├── README.md
+│   ├── CLEAN.BAT
+│   ├── RECEIVE.BAT
+│   ├── RECVASM.INI
+│   ├── TASM.zip
+│   └── KERMIT.zip
 └── projects/
     └── Galaxy16/
         ├── Galaxy16.asm
@@ -38,7 +43,7 @@ This repository is planned as a growing collection of small, understandable DOS 
 
 ## Quick build for Galaxy16
 
-From DOS, FreeDOS, or a DOS-capable environment where `TASM.EXE` and `TLINK.EXE` are available:
+From DOS, FreeDOS, DOSBox, or a DOS-capable environment where `TASM.EXE` and `TLINK.EXE` are available:
 
 ```bat
 CD PROJECTS\Galaxy16
@@ -67,15 +72,9 @@ Galaxy16.EXE
 
 ## Manual build
 
-To manually build Galaxy16 with the old TASM/TLINK tools, use only the base program name.
+The old TASM/TLINK workflow does not need file extensions on the command line. Use the base program name only.
 
-For example, for:
-
-```text
-Galaxy16.asm
-```
-
-run:
+For `Galaxy16.asm`, run:
 
 ```bat
 TASM Galaxy16
@@ -83,33 +82,11 @@ TLINK Galaxy16
 Galaxy16
 ```
 
-No file extensions are needed on the command line.
+TASM reads `Galaxy16.asm` and creates `Galaxy16.obj`.
 
-TASM will read:
+TLINK reads `Galaxy16.obj` and creates `Galaxy16.exe` by default.
 
-```text
-Galaxy16.asm
-```
-
-and produce:
-
-```text
-Galaxy16.obj
-```
-
-Then TLINK will read:
-
-```text
-Galaxy16.obj
-```
-
-and produce:
-
-```text
-Galaxy16.exe
-```
-
-Important: do **not** use `TLINK /T` for this project. The `/T` option is for tiny `.COM`-style output. Galaxy16 is intended to build as a normal DOS `.EXE` program, and plain `TLINK Galaxy16` creates the `.EXE` file automatically.
+Important: do **not** use `TLINK /T` for this repository's normal build. The `/T` option is for tiny `.COM` output. This repository is documenting the plain `TASM programname` then `TLINK programname` workflow that produces a DOS `.EXE` file.
 
 ## Galaxy16 controls
 
@@ -119,47 +96,55 @@ I      Force 8088 integer fallback math engine
 Q/ESC  Quit
 ```
 
-## Tools note
+## Galaxy16 rate display
 
-This project is designed around the classic Borland-style `TASM.EXE` and `TLINK.EXE` workflow.
+Galaxy16 shows a dynamic `RATE:` field instead of a raw frame-loop counter. The value is estimated from completed ring-calculation steps during one BIOS timer interval and scaled to a per-second rate.
 
-The normal build pattern is:
-
-```bat
-TASM programname
-TLINK programname
-programname
-```
-
-Example:
-
-```bat
-TASM Galaxy16
-TLINK Galaxy16
-Galaxy16
-```
-
-This creates:
+The unit changes automatically so the display makes sense on slow and fast DOS systems:
 
 ```text
-Galaxy16.EXE
+OPS    operations per second
+KOPS   thousands of operations per second
+MOPS   millions of operations per second
 ```
 
-The `tools/` folder can be used for helper notes, batch files, transfer settings, or locally supplied tool files. If TASM/TLINK are included in your local working copy, they can be used directly from DOS or from the project folder depending on your PATH setup.
+For example, a slow XT-class system may show `RATE:528 OPS`, while a faster DOS PC or emulator may show `RATE:12 KOPS` or higher. The small spinner/art marker is kept close to the rate unit so the status line looks tighter.
 
-Before publicly redistributing third-party tools, make sure you have the right to include them. The source code and project files in this repository are separate from any external assembler, linker, terminal, or file-transfer programs.
+## Included tool archives
+
+The `tools/` folder currently includes user-supplied convenience archives:
+
+```text
+tools/TASM.zip     Old TASM/TLINK tool archive
+tools/KERMIT.zip   MS-DOS Kermit archive for serial transfer work
+```
+
+`TASM.zip` contains the old `TASM.EXE` and `TLINK.EXE` tools used by the build examples.
+
+`KERMIT.zip` contains MS-DOS Kermit files for moving source, batch, executable, and support files to a vintage DOS machine over serial.
+
+Before publicly redistributing third-party tool archives, make sure you have the right to include them. The original assembly source, notes, and project files in this repository are separate from any external assembler, linker, terminal, or file-transfer programs.
 
 ## About `.BAT` and `.INI` files
 
-This repository may include helper `.BAT` and `.INI` files.
+This repository includes helper `.BAT` and `.INI` files.
 
-`.BAT` files are DOS/Windows batch files used to make building, running, or transferring projects easier. For example, `BUILD.BAT` may assemble and link a project automatically.
+`.BAT` files are DOS/Windows batch files. They automate common steps such as building a project, cleaning build outputs, or starting a receive workflow.
 
-`.INI` files are plain-text configuration files used by some tools or workflows. They may store serial settings, transfer settings, emulator settings, or project options.
+`.INI` files are plain-text configuration files. In this repo, `RECVASM.INI` is used as a simple MS-DOS Kermit receive configuration.
+
+Useful examples:
+
+```text
+projects/Galaxy16/BUILD.BAT   Builds Galaxy16.EXE
+tools/CLEAN.BAT               Deletes local build outputs in the current folder
+tools/RECEIVE.BAT             Starts Kermit receive mode using RECVASM.INI
+tools/RECVASM.INI             Kermit receive settings
+```
 
 Both `.BAT` and `.INI` files are meant to be opened, inspected, and edited with a normal text editor.
 
-Generated files such as `.OBJ`, `.MAP`, and `.EXE` are build outputs and may be excluded from the repository depending on the `.gitignore` settings.
+Generated files such as `.OBJ`, `.MAP`, `.EXE`, and `.COM` are build outputs and are excluded by `.gitignore`.
 
 ## Suggested future project folders
 
@@ -177,4 +162,4 @@ projects/
 
 The project source files, notes, and original project files in this repository are released under the MIT License unless a future project folder states otherwise.
 
-Third-party tools, if present in a local copy, remain under their own original licenses.
+Third-party tools, if included or added locally, remain under their own original licenses.

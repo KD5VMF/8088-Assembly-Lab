@@ -1,8 +1,27 @@
 # Serial transfer notes: Tera Term + MS-DOS Kermit
 
-This is the workflow used for moving clean `.ASM`, `.BAT`, `.COM`, and support files to a real DOS/8088 machine over serial.
+This is the workflow used for moving clean `.ASM`, `.BAT`, `.INI`, `.EXE`, and support files to a real DOS/8088 machine over serial.
+
+## Included DOS-side tools
+
+The `tools/` folder includes these user-supplied convenience archives:
+
+```text
+TASM.zip     Old TASM/TLINK tools
+KERMIT.zip   MS-DOS Kermit files
+```
+
+`TASM.zip` contains the assembler/linker used by the build examples.
+
+`KERMIT.zip` contains MS-DOS Kermit, including `KERMIT.EXE`, plus support files and `.INI` examples.
+
+Before publicly redistributing third-party tool archives, make sure you have the right to include them.
 
 ## Recommended terminal-side tools
+
+On the modern PC, use a terminal program that supports serial transfer. Tera Term works well for this kind of vintage serial workflow.
+
+Useful public pages:
 
 - Tera Term official project page: https://teratermproject.github.io/index-en.html
 - Tera Term GitHub organization: https://github.com/TeraTermProject
@@ -12,11 +31,11 @@ This is the workflow used for moving clean `.ASM`, `.BAT`, `.COM`, and support f
 - FreeDOS official site: https://www.freedos.org/
 - DOSBox Staging official site: https://www.dosbox-staging.org/
 
-## Recommended DOS-side tool
+## Recommended DOS-side receive flow
 
 Use **MS-DOS Kermit** on the vintage PC. For a real 8088/XT-class system, Kermit is usually safer than plain pasted text because it checks packets and can survive slower serial links better.
 
-## Basic DOS-side receive flow
+Basic manual receive flow:
 
 ```text
 C:\> MD \8088LAB
@@ -39,27 +58,34 @@ Tera Term menu:
 File -> Transfer -> Kermit -> Send...
 ```
 
-Select the file to send, for example:
+Select the files to send, for example:
 
 ```text
 Galaxy16.asm
 BUILD.BAT
 RUNME.TXT
-Galaxy16.COM
+Galaxy16.EXE
 ```
 
-## Simple auto-receive idea on the DOS machine
+## Simple auto-receive files
 
-You can create a small DOS batch file so the vintage machine is ready to receive without typing all Kermit setup commands every time.
+This repository includes helper files in `tools/`:
 
-Example `RX.BAT`:
+```text
+RECEIVE.BAT
+RECVASM.INI
+```
+
+`RECEIVE.BAT` starts Kermit using `RECVASM.INI`.
+
+Example `RECEIVE.BAT`:
 
 ```bat
 @ECHO OFF
-KERMIT TAKE RX.KSC
+KERMIT -F RECVASM.INI
 ```
 
-Example `RX.KSC`:
+Example `RECVASM.INI`:
 
 ```text
 SET PORT COM1
@@ -72,7 +98,7 @@ EXIT
 Then run:
 
 ```bat
-RX
+RECEIVE
 ```
 
 When Kermit is waiting, send the file from Tera Term using Kermit Send.
@@ -93,14 +119,14 @@ For COM2 on many PC-compatible serial cards, the common default IRQ is IRQ3. COM
 
 ## Keeping source files clean
 
-The `.gitattributes` file in this repository keeps `.asm`, `.bat`, and text docs DOS-friendly with CRLF line endings.
+The `.gitattributes` file in this repository keeps `.ASM`, `.BAT`, `.INI`, and text files DOS-friendly with CRLF line endings.
 
 Before sending files to a real DOS system:
 
-- Avoid smart quotes and non-ASCII symbols in `.ASM` and `.BAT` files.
+- Avoid smart quotes and non-ASCII symbols in `.ASM`, `.BAT`, and `.INI` files.
 - Prefer plain ASCII comments.
 - Keep DOS filenames short if the target machine does not support long filenames.
-- Use Kermit binary mode for `.COM`, `.EXE`, `.OBJ`, `.ZIP`, and tool files.
+- Use Kermit binary mode for `.EXE`, `.OBJ`, `.ZIP`, and tool files.
 - Use Kermit binary mode for `.ASM` too if you want exact bytes preserved.
 
 ## Recommended target folder on DOS

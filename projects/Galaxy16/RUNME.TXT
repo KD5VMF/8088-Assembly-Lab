@@ -2,19 +2,27 @@ Galaxy16 quick start
 ====================
 
 1. Build:
-   TASM Galaxy16.asm
-   TLINK /T Galaxy16.OBJ
+   TASM Galaxy16
+   TLINK Galaxy16
 
 2. Run:
    Galaxy16
 
-3. Keys while running:
+3. Expected build output:
+   Galaxy16.EXE
+
+4. Keys while running:
    F      Force 8087 floating-point engine, if detected
    I      Force 8088 integer fallback engine
    Q/ESC  Quit
 
 Notes:
+- Use the base program name only. No extensions are needed for TASM or TLINK.
+- Plain TLINK creates the .EXE file by default.
+- Do not use TLINK /T for the normal repo build. /T is for tiny .COM output.
 - This program does not change video mode.
 - It assumes an 80-column color text mode using B800h video RAM.
 - It does not write to disk while running.
-- The on-screen title remains GALAXY MATH 88 REV16.
+- The on-screen title is GALAXY MATH 88 REV18.
+- The RATE field shows the estimated ring-calculation rate per second.
+- The RATE unit changes automatically between OPS, KOPS, and MOPS.

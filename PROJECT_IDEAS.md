@@ -1,6 +1,6 @@
 # Future 8088 Assembly Lab project ideas
 
-This repository is set up for many small project folders.
+This repository is set up for many small DOS `.EXE` assembly project folders.
 
 ```text
 projects/
@@ -20,3 +20,13 @@ PROJECTNAME.ASM
 BUILD.BAT
 RUNME.TXT
 ```
+
+Use the same old TASM/TLINK command pattern unless a specific project says otherwise:
+
+```bat
+TASM PROJECTNAME
+TLINK PROJECTNAME
+PROJECTNAME
+```
+
+That plain `TLINK PROJECTNAME` step creates `PROJECTNAME.EXE` by default. Do not use `TLINK /T` unless a future project is intentionally meant to be a `.COM` program.

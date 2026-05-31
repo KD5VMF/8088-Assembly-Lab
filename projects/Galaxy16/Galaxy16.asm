@@ -2,13 +2,13 @@
 ; Galaxy16.asm
 ; 8088 / 8087 LIVE GALAXY MATH DISPLAY
 ;
-; REV16:
+; REV18:
 ;   - Does NOT change video mode at startup.
 ;   - Keeps REV15 table layout.
 ;   - Cleans up the top status box into fixed columns:
 ;
 ;       8087:YES    ENG:FPU     LAST:F      ACT:FPU MODE
-;       FREE:639    RINGS:128   HID:006     OPS:00030  /
+;       FREE:639    RINGS:128   HID:006     RATE:528  OPS /
 ;
 ;   - Removes A/AUTO.
 ;   - Keeps F and I:
@@ -16,13 +16,16 @@
 ;       I = force 8088 integer
 ;   - Hidden heavy work fixed at WORK_LEVEL = 2.
 ;   - No displayed AGE / FRAME / TIME growing fields.
+;   - RATE shows estimated operations per second with dynamic units:
+;       OPS, KOPS, or MOPS.
+;   - Spinner/art moved closer to the RATE unit text.
 ;
 ; Build:
-;   TASM Galaxy16.asm
-;   TLINK /T Galaxy16.OBJ
+;   TASM Galaxy16
+;   TLINK Galaxy16
 ;
 ; Output:
-;   Galaxy16.COM
+;   Galaxy16.EXE
 ; ================================================================
 
 .8086
@@ -74,14 +77,19 @@ MAIN_LOOP:
     mov word ptr [MAX_VEL], 0
 
     mov ax, [OPS_LOW]
-    mov [OPS_MARK], ax
+    mov [OPS_MARK_LOW], ax
+    mov ax, [OPS_HIGH]
+    mov [OPS_MARK_HIGH], ax
 
     call STEP_VISIBLE_ROWS
     call WORK_UNTIL_NEXT_TICK
 
     mov ax, [OPS_LOW]
-    sub ax, [OPS_MARK]
-    mov [OPS_TICK], ax
+    sub ax, [OPS_MARK_LOW]
+    mov [OPS_TICK_LOW], ax
+    mov ax, [OPS_HIGH]
+    sbb ax, [OPS_MARK_HIGH]
+    mov [OPS_TICK_HIGH], ax
 
     call DRAW_STATUS
     call DRAW_STATS
@@ -789,7 +797,7 @@ DRAW_STATIC_SCREEN PROC
     ; Four clean fixed status columns:
     ;
     ; 8087:YES    ENG:FPU     LAST:F      ACT:FPU MODE
-    ; FREE:639    RINGS:128   HID:006     OPS:00030  /
+    ; FREE:639    RINGS:128   HID:006     RATE:528  OPS /
 
     mov dh, 5
     mov dl, 18
@@ -828,7 +836,7 @@ DRAW_STATIC_SCREEN PROC
 
     mov dh, 6
     mov dl, 58
-    mov si, OFFSET SOPS
+    mov si, OFFSET SRATE
     call PUT_STR_AT
 
     mov dh, 8
@@ -935,24 +943,122 @@ DRAW_STATUS PROC
     mov cl, 3
     call PUT_DEC_ZERO_AT
 
-    mov dh, 6
-    mov dl, 62
-    mov ax, [OPS_TICK]
-    mov cl, 5
-    call PUT_DEC_ZERO_AT
+    call DRAW_RATE
 
-    ; Spinner directly after OPS:00000 with two spaces.
+    ; Spinner after the dynamic rate field.
     mov bx, [SPINNER_INDEX]
     and bx, 0003h
     mov al, [SPINNER_CHARS + bx]
     mov dh, 6
-    mov dl, 69
+    mov dl, 73
     call PUT_CHAR_AT
 
     inc word ptr [SPINNER_INDEX]
 
     ret
 DRAW_STATUS ENDP
+
+DRAW_RATE PROC
+    ; Convert ring-calculation steps per BIOS timer tick into an
+    ; estimated per-second rate. The PC BIOS timer is about 18.2 Hz.
+    ;
+    ; If below 1000/sec, show raw OPS.
+    ; If below 1,000,000/sec, show integer KOPS.
+    ; Otherwise show integer MOPS.
+
+    push ax
+    push bx
+    push cx
+    push dx
+    push si
+
+    ; Clear the whole live field: value, space, unit, and spare blanks.
+    mov dh, 6
+    mov dl, 63
+    mov cx, 11
+    call PUT_SPACES_AT
+
+    mov dx, [OPS_TICK_HIGH]
+    mov ax, [OPS_TICK_LOW]
+
+    cmp dx, 0
+    jne RATE_USE_MOPS
+
+    ; 55 operations per tick is about 1000 operations per second.
+    cmp ax, 55
+    jae RATE_CHECK_KOPS
+
+RATE_USE_OPS:
+    ; OPS/sec ~= OPS/tick * 18.2
+    ; Use integer approximation: OPS*18 + OPS/5.
+    mov bx, ax
+    mov cx, 18
+    mul cx
+    mov cx, ax
+    mov ax, bx
+    xor dx, dx
+    mov bx, 5
+    div bx
+    add ax, cx
+    mov si, OFFSET UNIT_OPS
+    jmp RATE_DRAW_VALUE
+
+RATE_CHECK_KOPS:
+    ; 54,945 operations per tick is about 1,000,000/sec.
+    cmp ax, 54945
+    jae RATE_USE_MOPS
+
+RATE_USE_KOPS:
+    ; KOPS ~= OPS/tick * 18.2 / 1000
+    ;      ~= OPS/tick * 182 / 10000
+    mov bx, 182
+    mul bx
+    mov bx, 10000
+    div bx
+    cmp ax, 0
+    jne RATE_KOPS_NONZERO
+    mov ax, 1
+RATE_KOPS_NONZERO:
+    mov si, OFFSET UNIT_KOPS
+    jmp RATE_DRAW_VALUE
+
+RATE_USE_MOPS:
+    ; MOPS ~= OPS/tick / 54,945.
+    ; Works for very fast DOS PCs/emulators too, because the operation
+    ; counter is now 32-bit. Cap the display if the 32/16 divide would
+    ; overflow an 8086 quotient.
+    mov dx, [OPS_TICK_HIGH]
+    mov ax, [OPS_TICK_LOW]
+    mov bx, 54945
+    cmp dx, bx
+    jb RATE_MOPS_DIVIDE
+    mov ax, 65535
+    jmp RATE_MOPS_READY
+RATE_MOPS_DIVIDE:
+    div bx
+    cmp ax, 0
+    jne RATE_MOPS_READY
+    mov ax, 1
+RATE_MOPS_READY:
+    mov si, OFFSET UNIT_MOPS
+
+RATE_DRAW_VALUE:
+    mov dh, 6
+    mov dl, 63
+    mov cl, 5
+    call PUT_DEC_TIGHT_AT
+
+    mov dh, 6
+    mov dl, 69
+    call PUT_STR_AT
+
+    pop si
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+    ret
+DRAW_RATE ENDP
 
 DRAW_STATS PROC
     mov dh, 21
@@ -1058,7 +1164,7 @@ VISIBLE_DONE:
 STEP_VISIBLE_ROWS ENDP
 
 DRAW_ONE_ROW PROC
-    ; REV16 keeps REV15 table alignment.
+    ; REV18 keeps REV15 table alignment and keeps the spinner close to RATE units.
 
     mov ax, [SAMPLE_RING_NUM]
     inc ax
@@ -1249,7 +1355,10 @@ STEP_ONE_COMMON:
     call HEAVY_WORK_LOAD
 
     inc word ptr [OPS_LOW]
+    jnz OPS_COUNT_DONE
+    inc word ptr [OPS_HIGH]
 
+OPS_COUNT_DONE:
     ret
 STEP_ONE_RING ENDP
 
@@ -1930,7 +2039,7 @@ UPDATE_PHASE ENDP
 
 LINE76          db '----------------------------------------------------------------------------',0
 
-TITLE_STR       db 'GALAXY MATH 88 REV16',0
+TITLE_STR       db 'GALAXY MATH 88 REV18',0
 SUBTITLE_STR    db '8088 / 8087 REAL GALAXY RING CALCULATIONS',0
 TABLE_TITLE     db 'LIVE GALACTIC ORBIT RING MONITOR',0
 
@@ -1942,7 +2051,7 @@ SACTION         db 'ACT:',0
 SFREE           db 'FREE:',0
 SRINGS          db 'RINGS:',0
 SHID            db 'HID:',0
-SOPS            db 'OPS:',0
+SRATE           db 'RATE:',0
 
 SAVG            db 'AVG:',0
 SMAX            db 'MAX:',0
@@ -1966,6 +2075,10 @@ ACTION_INT      db 'INT MODE',0
 ACTION_NOFPU    db 'NO 8087',0
 
 SPINNER_CHARS   db '|/-\',0
+
+UNIT_OPS        db 'OPS ',0
+UNIT_KOPS       db 'KOPS',0
+UNIT_MOPS       db 'MOPS',0
 
 ; ================================================================
 ; TEMP VARIABLES
@@ -2022,8 +2135,11 @@ SPINNER_INDEX   dw 0
 WORK_LEVEL      dw 2
 
 OPS_LOW         dw 0
-OPS_MARK        dw 0
-OPS_TICK        dw 0
+OPS_HIGH        dw 0
+OPS_MARK_LOW    dw 0
+OPS_MARK_HIGH   dw 0
+OPS_TICK_LOW    dw 0
+OPS_TICK_HIGH   dw 0
 
 FRAME_ENERGY    dw 0
 FRAME_VEL_SUM   dw 0
