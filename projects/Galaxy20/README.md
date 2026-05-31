@@ -2,7 +2,7 @@
 
 Real-mode 8088/8087 DOS assembly projects for vintage PCs, XT-class systems, emulators, serial transfers, and green-screen math demos.
 
-This repository is planned as a growing collection of small, understandable DOS `.EXE` assembly projects. The first project is **Galaxy16**, a live monochrome-green galaxy math display that detects an 8087 math coprocessor and can switch between 8087 floating-point math and 8088-safe integer math.
+This repository is planned as a growing collection of small, understandable DOS `.EXE` assembly projects. The first project is **Galaxy20**, a live monochrome-green galaxy math display that detects an 8087 math coprocessor and can switch between 8087 floating-point math and 8088-safe integer math.
 
 ## Repository description for GitHub
 
@@ -12,7 +12,7 @@ This repository is planned as a growing collection of small, understandable DOS 
 
 | Project | Folder | Description |
 |---|---|---|
-| Galaxy16 | `projects/Galaxy16/` | Live 8088/8087 galaxy-ring math monitor. Green text, direct video RAM, no disk writes while running. Builds as a DOS `.EXE` program. |
+| Galaxy20 | `projects/Galaxy20/` | Live 8088/8087 galaxy-ring math monitor. Green text, direct video RAM, no disk writes while running. Builds as a DOS `.EXE` program. |
 
 ## Folder layout
 
@@ -26,7 +26,7 @@ This repository is planned as a growing collection of small, understandable DOS 
 ├── docs/
 │   ├── SERIAL_TRANSFER.md
 │   ├── TASM_TLINK_SETUP.md
-│   └── Galaxy16_NOTES.md
+│   └── Galaxy20_NOTES.md
 ├── tools/
 │   ├── README.md
 │   ├── CLEAN.BAT
@@ -35,18 +35,18 @@ This repository is planned as a growing collection of small, understandable DOS 
 │   ├── TASM.zip
 │   └── KERMIT.zip
 └── projects/
-    └── Galaxy16/
-        ├── Galaxy16.asm
+    └── Galaxy20/
+        ├── Galaxy20.asm
         ├── BUILD.BAT
         └── RUNME.TXT
 ```
 
-## Quick build for Galaxy16
+## Quick build for Galaxy20
 
 From DOS, FreeDOS, DOSBox, or a DOS-capable environment where `TASM.EXE` and `TLINK.EXE` are available:
 
 ```bat
-CD PROJECTS\Galaxy16
+CD PROJECTS\Galaxy20
 BUILD
 ```
 
@@ -55,40 +55,40 @@ The build script assembles and links the program as a DOS `.EXE` file.
 Expected output:
 
 ```text
-Galaxy16.EXE
+Galaxy20.EXE
 ```
 
 Run it with:
 
 ```bat
-Galaxy16
+Galaxy20
 ```
 
 or:
 
 ```bat
-Galaxy16.EXE
+Galaxy20.EXE
 ```
 
 ## Manual build
 
 The old TASM/TLINK workflow does not need file extensions on the command line. Use the base program name only.
 
-For `Galaxy16.asm`, run:
+For `Galaxy20.asm`, run:
 
 ```bat
-TASM Galaxy16
-TLINK Galaxy16
-Galaxy16
+TASM Galaxy20
+TLINK Galaxy20
+Galaxy20
 ```
 
-TASM reads `Galaxy16.asm` and creates `Galaxy16.obj`.
+TASM reads `Galaxy20.asm` and creates `Galaxy20.obj`.
 
-TLINK reads `Galaxy16.obj` and creates `Galaxy16.exe` by default.
+TLINK reads `Galaxy20.obj` and creates `Galaxy20.exe` by default.
 
 Important: do **not** use `TLINK /T` for this repository's normal build. The `/T` option is for tiny `.COM` output. This repository is documenting the plain `TASM programname` then `TLINK programname` workflow that produces a DOS `.EXE` file.
 
-## Galaxy16 controls
+## Galaxy20 controls
 
 ```text
 F      Force 8087 FPU math engine, if an 8087 is detected
@@ -96,9 +96,9 @@ I      Force 8088 integer fallback math engine
 Q/ESC  Quit
 ```
 
-## Galaxy16 rate display
+## Galaxy20 rate display
 
-Galaxy16 shows a dynamic `RATE:` field instead of a raw frame-loop counter. The value is estimated from completed ring-calculation steps during one BIOS timer interval and scaled to a per-second rate.
+Galaxy20 shows a dynamic `RATE:` field instead of a raw frame-loop counter. The value is estimated from completed ring-calculation steps during one BIOS timer interval and scaled to a per-second rate.
 
 The unit changes automatically so the display makes sense on slow and fast DOS systems:
 
@@ -110,9 +110,9 @@ MOPS   millions of operations per second
 
 For example, a slow XT-class system may show `RATE:528 OPS`, while a faster DOS PC or emulator may show `RATE:12 KOPS` or higher. The small spinner/art marker is kept close to the rate unit so the status line looks tighter.
 
-## Galaxy16 randomized galaxy values
+## Galaxy20 randomized galaxy values
 
-Galaxy16 creates a slightly different galaxy every run, and now refreshes the live mass inputs every 25 main display iterations. Each ring receives independent randomized mass-style values:
+Galaxy20 creates a slightly different galaxy every run, and now refreshes the live mass inputs every 25 main display iterations. Each ring receives independent randomized mass-style values:
 
 ```text
 BAR   random 1 to 100
@@ -148,7 +148,7 @@ This repository includes helper `.BAT` and `.INI` files.
 Useful examples:
 
 ```text
-projects/Galaxy16/BUILD.BAT   Builds Galaxy16.EXE
+projects/Galaxy20/BUILD.BAT   Builds Galaxy20.EXE
 tools/CLEAN.BAT               Deletes local build outputs in the current folder
 tools/RECEIVE.BAT             Starts Kermit receive mode using RECVASM.INI
 tools/RECVASM.INI             Kermit receive settings
@@ -162,7 +162,7 @@ Generated files such as `.OBJ`, `.MAP`, `.EXE`, and `.COM` are build outputs and
 
 ```text
 projects/
-├── Galaxy16/
+├── Galaxy20/
 ├── CLOCK88/
 ├── BENCH88/
 ├── SERIALDIAG88/
