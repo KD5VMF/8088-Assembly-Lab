@@ -2,7 +2,7 @@
 
 Real-mode 8088/8087 DOS assembly projects for vintage PCs, XT-class systems, emulators, serial transfers, and green-screen math demos.
 
-This repository is planned as a growing collection of small, understandable DOS `.COM` assembly projects. The first project is **GALMATH16**, a live monochrome-green galaxy math display that detects an 8087 and can switch between 8087 floating-point math and 8088-safe integer math.
+This repository is planned as a growing collection of small, understandable DOS `.COM` assembly projects. The first project is **Galaxy16**, a live monochrome-green galaxy math display that detects an 8087 and can switch between 8087 floating-point math and 8088-safe integer math.
 
 ## Repository description for GitHub
 
@@ -12,7 +12,7 @@ This repository is planned as a growing collection of small, understandable DOS 
 
 | Project | Folder | Description |
 |---|---|---|
-| GALMATH16 | `projects/GALMATH16/` | Live 8088/8087 galaxy-ring math monitor. Green text, direct video RAM, no disk writes while running. |
+| Galaxy16 | `projects/Galaxy16/` | Live 8088/8087 galaxy-ring math monitor. Green text, direct video RAM, no disk writes while running. |
 
 ## Folder layout
 
@@ -21,37 +21,39 @@ This repository is planned as a growing collection of small, understandable DOS 
 ├── README.md
 ├── LICENSE
 ├── .gitignore
+├── .gitattributes
+├── PROJECT_IDEAS.md
 ├── docs/
 │   ├── SERIAL_TRANSFER.md
 │   ├── TASM_TLINK_SETUP.md
-│   └── GALMATH16_NOTES.md
+│   └── Galaxy16_NOTES.md
 ├── tools/
 │   └── README.md
 └── projects/
-    └── GALMATH16/
-        ├── GALMATH16.ASM
+    └── Galaxy16/
+        ├── Galaxy16.asm
         ├── BUILD.BAT
         └── RUNME.TXT
 ```
 
-## Quick build for GALMATH16
+## Quick build for Galaxy16
 
 From DOS, FreeDOS, or a DOS-capable environment where `TASM.EXE` and `TLINK.EXE` are available:
 
 ```bat
-CD PROJECTS\GALMATH16
+CD PROJECTS\Galaxy16
 BUILD
 ```
 
 Manual build:
 
 ```bat
-TASM GALMATH16.ASM
-TLINK /T GALMATH16.OBJ
-GALMATH16
+TASM Galaxy16.asm
+TLINK /T Galaxy16.OBJ
+Galaxy16
 ```
 
-## GALMATH16 controls
+## Galaxy16 controls
 
 ```text
 F      Force 8087 FPU math engine, if an 8087 is detected
@@ -67,7 +69,7 @@ This repository does **not** include `TASM.EXE`, `TLINK.EXE`, Tera Term, or Kerm
 
 ```text
 projects/
-├── GALMATH16/
+├── Galaxy16/
 ├── CLOCK88/
 ├── BENCH88/
 ├── SERIALDIAG88/
