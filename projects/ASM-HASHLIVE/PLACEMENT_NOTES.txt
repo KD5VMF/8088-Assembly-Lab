@@ -1,0 +1,23 @@
+GitHub placement notes
+======================
+
+Copy this folder into your 8088-Assembly-Lab repository:
+
+  projects/HASHLIVE/
+
+Recommended files to commit:
+
+  projects/HASHLIVE/HASHLIVE.ASM
+  projects/HASHLIVE/README.md
+  projects/HASHLIVE/BUILD.BAT
+  projects/HASHLIVE/CLEAN.BAT
+
+Do not commit generated build files unless you intentionally want binaries in the repo:
+
+  HASHLIVE.OBJ
+  HASHLIVE.MAP
+  HASHLIVE.EXE
+
+Root README update:
+
+  Open ROOT_README_ADDON.md and copy the HASHLIVE row into the main Current projects table.
