@@ -1,0 +1,19 @@
+GALMATH16 quick start
+=====================
+
+1. Build:
+   TASM GALMATH16.ASM
+   TLINK /T GALMATH16.OBJ
+
+2. Run:
+   GALMATH16
+
+3. Keys while running:
+   F      Force 8087 floating-point engine, if detected
+   I      Force 8088 integer fallback engine
+   Q/ESC  Quit
+
+Notes:
+- This program does not change video mode.
+- It assumes an 80-column color text mode using B800h video RAM.
+- It does not write to disk while running.
