@@ -1,9 +1,22 @@
 # Future 8088 Assembly Lab project ideas
 
-- `CLOCK88` - smooth text-mode analog/digital clock.
-- `BENCH88` - 8088/8087 math benchmark with safe read-only workload.
-- `SERIALDIAG88` - COM port diagnostic and loopback tester.
-- `PRIME88` - prime-number calculator with 8087/8088 comparison mode.
-- `VIDRAM88` - direct video RAM pattern and speed tests.
-- `MEMSCAN88` - safe conventional memory display and simple walking-pattern test.
-- `CFREAD88` - read-only CF/IDE access tester and checksum demo.
+This repository is set up for many small project folders.
+
+```text
+projects/
+├── Galaxy16/       Live galaxy math display with 8087 support
+├── CLOCK88/        High-resolution text/graphics clock experiments
+├── BENCH88/        8088/8087 benchmark and stress tests
+├── SERIALDIAG88/   COM port and transfer diagnostics
+├── PRIME88/        Prime-number calculators and displays
+├── VIDRAM88/       Direct B800h text-mode video RAM demos
+└── FPUDEMO88/      8087 detection and floating-point examples
+```
+
+Keep each project self-contained with:
+
+```text
+PROJECTNAME.ASM
+BUILD.BAT
+RUNME.TXT
+```

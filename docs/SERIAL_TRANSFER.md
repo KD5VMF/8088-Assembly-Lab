@@ -7,19 +7,21 @@ This is the workflow used for moving clean `.ASM`, `.BAT`, `.COM`, and support f
 - Tera Term official project page: https://teratermproject.github.io/index-en.html
 - Tera Term GitHub organization: https://github.com/TeraTermProject
 - Tera Term source repository: https://github.com/TeraTermProject/teraterm
-- MS-DOS Kermit page: https://www.columbia.edu/kermit/mskermit.html
-- The Kermit Project page: https://www.columbia.edu/kermit/
-- Current Kermit versions page: https://www.kermitproject.org/current.html
+- MS-DOS Kermit page: https://www.columbia.edu/kermit/new/mskermit.html
+- The Kermit Project current versions page: https://www.kermitproject.org/current.html
+- FreeDOS official site: https://www.freedos.org/
+- DOSBox Staging official site: https://www.dosbox-staging.org/
 
 ## Recommended DOS-side tool
 
 Use **MS-DOS Kermit** on the vintage PC. For a real 8088/XT-class system, Kermit is usually safer than plain pasted text because it checks packets and can survive slower serial links better.
 
-Typical DOS-side receive flow:
+## Basic DOS-side receive flow
 
 ```text
-A:\> CD \8088LAB
-A:\8088LAB> KERMIT
+C:\> MD \8088LAB
+C:\> CD \8088LAB
+C:\8088LAB> KERMIT
 MS-Kermit> SET PORT COM1
 MS-Kermit> SET SPEED 9600
 MS-Kermit> SET FILE TYPE BINARY
@@ -27,6 +29,53 @@ MS-Kermit> RECEIVE
 ```
 
 Then send the file from the modern PC using Tera Term or another terminal that supports Kermit transfer.
+
+## Tera Term send flow
+
+Typical manual flow from the modern PC:
+
+```text
+Tera Term menu:
+File -> Transfer -> Kermit -> Send...
+```
+
+Select the file to send, for example:
+
+```text
+Galaxy16.asm
+BUILD.BAT
+RUNME.TXT
+Galaxy16.COM
+```
+
+## Simple auto-receive idea on the DOS machine
+
+You can create a small DOS batch file so the vintage machine is ready to receive without typing all Kermit setup commands every time.
+
+Example `RX.BAT`:
+
+```bat
+@ECHO OFF
+KERMIT TAKE RX.KSC
+```
+
+Example `RX.KSC`:
+
+```text
+SET PORT COM1
+SET SPEED 9600
+SET FILE TYPE BINARY
+RECEIVE
+EXIT
+```
+
+Then run:
+
+```bat
+RX
+```
+
+When Kermit is waiting, send the file from Tera Term using Kermit Send.
 
 ## Suggested serial settings
 
@@ -40,42 +89,24 @@ Stop bits:  1
 Flow:       None first; RTS/CTS if both sides support it
 ```
 
-## Clean text-file transfer rules
+For COM2 on many PC-compatible serial cards, the common default IRQ is IRQ3. COM1 commonly uses IRQ4.
 
-Assembly files are sensitive to damaged characters, pasted wrapping, and hidden encoding issues. For `.ASM` source files:
+## Keeping source files clean
 
-1. Keep files as plain ASCII text when possible.
-2. Use CR/LF line endings for DOS tools.
-3. Avoid smart quotes and Unicode symbols.
-4. Do not paste long source files directly into DOS unless you must.
-5. Prefer Kermit packet transfer for source and binary files.
+The `.gitattributes` file in this repository keeps `.asm`, `.bat`, and text docs DOS-friendly with CRLF line endings.
 
-## Auto receive idea
+Before sending files to a real DOS system:
 
-On the DOS machine, keep a small batch file such as `RX.BAT`:
+- Avoid smart quotes and non-ASCII symbols in `.ASM` and `.BAT` files.
+- Prefer plain ASCII comments.
+- Keep DOS filenames short if the target machine does not support long filenames.
+- Use Kermit binary mode for `.COM`, `.EXE`, `.OBJ`, `.ZIP`, and tool files.
+- Use Kermit binary mode for `.ASM` too if you want exact bytes preserved.
 
-```bat
-@ECHO OFF
-CD \8088LAB
-KERMIT -C "SET PORT COM1, SET SPEED 9600, SET FILE TYPE BINARY, RECEIVE, EXIT"
-```
-
-If your MS-DOS Kermit version does not accept the one-line `-C` command syntax, use normal interactive commands instead:
+## Recommended target folder on DOS
 
 ```text
-KERMIT
-SET PORT COM1
-SET SPEED 9600
-SET FILE TYPE BINARY
-RECEIVE
+C:\8088LAB\PROJECTS\GALAXY16
 ```
 
-## Good transfer pattern for this repository
-
-1. Build or edit files on the modern PC.
-2. Send `.ASM`, `.BAT`, and `.TXT` with Kermit.
-3. Build on the DOS machine using `TASM` and `TLINK`.
-4. Send `.COM` directly only when you trust the serial link and the target filesystem.
-5. Keep the CF card safe by avoiding programs that write repeatedly while running.
-
-GALMATH16 itself does not write to disk while running.
+On classic DOS, filenames are case-insensitive, so `Galaxy16.asm` may appear as `GALAXY16.ASM`.

@@ -1,0 +1,20 @@
+Galaxy16 quick start
+====================
+
+1. Build:
+   TASM Galaxy16.asm
+   TLINK /T Galaxy16.OBJ
+
+2. Run:
+   Galaxy16
+
+3. Keys while running:
+   F      Force 8087 floating-point engine, if detected
+   I      Force 8088 integer fallback engine
+   Q/ESC  Quit
+
+Notes:
+- This program does not change video mode.
+- It assumes an 80-column color text mode using B800h video RAM.
+- It does not write to disk while running.
+- The on-screen title remains GALAXY MATH 88 REV16.
