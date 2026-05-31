@@ -67,15 +67,49 @@ Galaxy16.EXE
 
 ## Manual build
 
-To manually build Galaxy16:
+To manually build Galaxy16 with the old TASM/TLINK tools, use only the base program name.
+
+For example, for:
+
+```text
+Galaxy16.asm
+```
+
+run:
 
 ```bat
-TASM Galaxy16.asm
-TLINK Galaxy16.OBJ
+TASM Galaxy16
+TLINK Galaxy16
 Galaxy16
 ```
 
-Important: do **not** use `TLINK /T` for this project. The `/T` option creates a tiny `.COM`-style output. Galaxy16 is intended to build as a normal DOS `.EXE` program.
+No file extensions are needed on the command line.
+
+TASM will read:
+
+```text
+Galaxy16.asm
+```
+
+and produce:
+
+```text
+Galaxy16.obj
+```
+
+Then TLINK will read:
+
+```text
+Galaxy16.obj
+```
+
+and produce:
+
+```text
+Galaxy16.exe
+```
+
+Important: do **not** use `TLINK /T` for this project. The `/T` option is for tiny `.COM`-style output. Galaxy16 is intended to build as a normal DOS `.EXE` program, and plain `TLINK Galaxy16` creates the `.EXE` file automatically.
 
 ## Galaxy16 controls
 
@@ -85,11 +119,35 @@ I      Force 8088 integer fallback math engine
 Q/ESC  Quit
 ```
 
-## Important tool note
+## Tools note
 
-This repository does **not** include `TASM.EXE`, `TLINK.EXE`, Tera Term, Kermit, or other commercial/third-party transfer tools. Add your own legally obtained copies of tools locally.
+This project is designed around the classic Borland-style `TASM.EXE` and `TLINK.EXE` workflow.
 
-The documentation explains the workflow and may reference public tool pages where appropriate.
+The normal build pattern is:
+
+```bat
+TASM programname
+TLINK programname
+programname
+```
+
+Example:
+
+```bat
+TASM Galaxy16
+TLINK Galaxy16
+Galaxy16
+```
+
+This creates:
+
+```text
+Galaxy16.EXE
+```
+
+The `tools/` folder can be used for helper notes, batch files, transfer settings, or locally supplied tool files. If TASM/TLINK are included in your local working copy, they can be used directly from DOS or from the project folder depending on your PATH setup.
+
+Before publicly redistributing third-party tools, make sure you have the right to include them. The source code and project files in this repository are separate from any external assembler, linker, terminal, or file-transfer programs.
 
 ## About `.BAT` and `.INI` files
 
@@ -117,4 +175,6 @@ projects/
 
 ## License
 
-The project files in this repository are released under the MIT License unless a future project folder states otherwise.
+The project source files, notes, and original project files in this repository are released under the MIT License unless a future project folder states otherwise.
+
+Third-party tools, if present in a local copy, remain under their own original licenses.
