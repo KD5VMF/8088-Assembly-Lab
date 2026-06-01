@@ -1,0 +1,1 @@
+8088/8086 DOS serial matrix co-processor: XT generates matrix jobs over RS-232, Windows C# host performs 4096 x 4096 deterministic matrix-multiplication work, XT displays live VGA results.

@@ -1,0 +1,25 @@
+GITHUB UPLOAD STEPS
+===================
+
+Option A: upload as its own new repository
+------------------------------------------
+1. Create a new GitHub repository.
+2. Suggested repository name:
+   XT-Serial-Matrix-Coprocessor
+3. Suggested description:
+   8088/8086 DOS serial matrix co-processor: XT sends matrix jobs over RS-232, C# PC host calculates, XT displays live VGA results.
+4. Upload all files/folders from this ZIP to the repository root.
+5. Commit with a message such as:
+   Initial REV1 XT Serial Matrix Co-Processor project
+
+Option B: add to the existing 8088-Assembly-Lab repository
+----------------------------------------------------------
+1. Create this folder in the existing repo:
+   projects/XT_SERIAL_MATRIX_COPRO/
+2. Copy all files/folders from this ZIP into that folder.
+3. Commit with a message such as:
+   Add XT Serial Matrix Co-Processor project
+
+Suggested GitHub topics
+-----------------------
+8088, 8086, dos, assembly, tasm, serial, rs232, csharp, matrix, retrocomputing, vga-text-mode

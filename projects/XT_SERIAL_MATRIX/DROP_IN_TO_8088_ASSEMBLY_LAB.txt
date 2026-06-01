@@ -1,0 +1,20 @@
+DROP-IN LOCATION FOR 8088-Assembly-Lab
+======================================
+
+Recommended path inside the main repo:
+
+projects/XT_SERIAL_MATRIX_COPRO/
+
+Put this entire project folder there.
+
+The DOS ASM source is under:
+
+src/8088-dos-asm/
+
+The Windows C# serial host is under:
+
+src/pc-csharp/
+
+For quick release sharing, the original flat REV1 package is also included in:
+
+release-package/XT_SERIAL_MATRIX_COPRO_REV1.zip
